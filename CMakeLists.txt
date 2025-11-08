@@ -1,9 +1,20 @@
 cmake_minimum_required(VERSION 3.20)
+## Prefer Clang if available and not already set
+if(NOT CMAKE_CXX_COMPILER)
+    find_program(CLANGPP clang++)
+    if(CLANGPP)
+        set(CMAKE_CXX_COMPILER ${CLANGPP} CACHE STRING "C++ compiler" FORCE)
+    endif()
+endif()
 project(TradeBookEngine 
     VERSION 1.0.0
     DESCRIPTION "A C++ trade booking engine with modular architecture"
     LANGUAGES CXX
 )
+
+# Options
+option(TRADEBOOK_ENABLE_WERROR "Treat warnings as errors" OFF)
+
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -15,10 +26,18 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if(MSVC)
     add_compile_options(/W4)
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-    # Remove /WX for now to avoid treating warnings as errors during development
+    if(TRADEBOOK_ENABLE_WERROR)
+        add_compile_options(/WX)
+    endif()
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
-    # Remove -Werror for now to avoid treating warnings as errors during development
+    # Common warnings for GCC/Clang
+    add_compile_options(-Wall -Wextra -Wpedantic -Wconversion -Wshadow -Wuninitialized -Wunused -Wsign-conversion)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-Wimplicit-fallthrough -Wshorten-64-to-32)
+    endif()
+    if(TRADEBOOK_ENABLE_WERROR)
+        add_compile_options(-Werror)
+    endif()
 endif()
 
 # Build configuration

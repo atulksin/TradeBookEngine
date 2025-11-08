@@ -35,13 +35,13 @@ namespace Models {
         // Status
         Enums::TradeStatus Status;
         
-        TradeDto() 
-            : Notional(0.0)
+        TradeDto()
+            : AssetClass(Enums::AssetClass::Equity)
+            , Notional(0.0)
             , Side(Enums::TradeSide::Buy)
-            , AssetClass(Enums::AssetClass::Equity)
-            , Status(Enums::TradeStatus::Pending)
             , TradeDate(std::chrono::system_clock::now())
-            , CreatedAt(std::chrono::system_clock::now()) {
+            , CreatedAt(std::chrono::system_clock::now())
+            , Status(Enums::TradeStatus::Pending) {
         }
     };
 
